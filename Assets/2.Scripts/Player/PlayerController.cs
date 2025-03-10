@@ -28,7 +28,8 @@ public class PlayerController : MonoBehaviour
     public bool canLook = true;
 
     private Rigidbody rigidbody;
-    
+    public Action inventory;
+
     private void Awake()
     {
         rigidbody = GetComponent<Rigidbody>();
@@ -105,6 +106,7 @@ public class PlayerController : MonoBehaviour
         rigidbody.velocity = dir;
     }
 
+    // 대쉬
     private void Dash()
     {
         if(curSpeed == moveSpeed)
@@ -153,6 +155,7 @@ public class PlayerController : MonoBehaviour
         canLook = !toggle;
     }
 
+    // 스테이지 이탈
     public void Fall()
     {
         if(this.gameObject.transform.position.y < 0)
@@ -162,5 +165,27 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    // 점프대
+    public void JumpingPlayform(int power)
+    {
+        rigidbody.AddForce(Vector2.up * power, ForceMode.Impulse);
+    }
+
+    // 인벤토리 버튼
+    public void OnInventoryButton(InputAction.CallbackContext callbackContext)
+    {
+        if (callbackContext.phase == InputActionPhase.Started)
+        {
+            inventory?.Invoke();
+            ToggleCursor();
+        }
+    }
+
+    void ToggleCursor()
+    {
+        bool toggle = Cursor.lockState == CursorLockMode.Locked;
+        Cursor.lockState = toggle ? CursorLockMode.None : CursorLockMode.Locked;
+        canLook = !toggle;
+    }
 
 }

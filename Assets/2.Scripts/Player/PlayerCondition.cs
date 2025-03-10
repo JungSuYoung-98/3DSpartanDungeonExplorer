@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 using static UnityEngine.UIElements.UxmlAttributeDescription;
 public interface IDamagable
@@ -14,6 +15,9 @@ public class PlayerCondition : MonoBehaviour, IDamagable
     Condition stamina { get { return uiCondition.stamina; } }
 
     public event Action onTakeDamage;
+
+    private Coroutine coroutine;
+
 
     private void Update()
     {
@@ -50,6 +54,26 @@ public class PlayerCondition : MonoBehaviour, IDamagable
     {
         health.Subtract(damageAmount);
         onTakeDamage?.Invoke();
+    }
+
+    public void SpeedUP(float amount)
+    {
+        if (coroutine != null)
+        {
+            StopCoroutine(coroutine);
+        }
+
+        coroutine = StartCoroutine(UseSpeedItem(amount));
+    }
+
+    private IEnumerator UseSpeedItem(float amount)
+    {
+        float startSpeed = CharacterManager.Instance.Player.controller.moveSpeed;
+        CharacterManager.Instance.Player.controller.moveSpeed += amount;
+
+        yield return new WaitForSeconds(20);
+
+        CharacterManager.Instance.Player.controller.moveSpeed = startSpeed;
     }
 
 }
